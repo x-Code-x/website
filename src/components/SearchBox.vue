@@ -1,40 +1,44 @@
 <template>
-  <div class="container-fluid color-background pb-3">
-    <h5 class="text-center mb-0 text-white py-4">Search for organisations</h5>
+    <div class="search form">
+      <h3>Search</h3>
 
-    <div class="row">
-      <!-- Need Input -->
-      <div class="col-12">
-        <input
-          type="text"
-          class="form-control"
-          v-model="input_need"
-          id="search_need"
-          placeholder="What do you need? eg. food, fuel"
-        />
+      <div class="row no-gutter">
+        <!-- Search Term Input -->
+        <div class="col-12 col-md-10 form-item">
+          <input
+            type="text"
+            class="form-control"
+            v-model="search_term"
+            placeholder="What do you need? eg. food, fuel"
+          />
+        </div>
       </div>
 
-      <!-- LGA Selection -->
-      <div class="col-12 mt-3">
-        <multiselect v-model="search_lga" :options="search_lgas" label="name" track-by="value" />
-      </div>
+      <div class="row no-gutter">
+        <!-- Location Selection -->
+        <div class="col-12 col-sm-4 form-item">
+          <multiselect
+            v-model="search_location"
+            :options="search_locations"
+            placeholder="Location"
+          />
+        </div>
 
-      <!-- Category -->
-      <div class="col-12 mt-3">
-        <multiselect
-          v-model="search_category"
-          :options="search_categories"
-          label="display"
-          track-by="value"
-        />
-      </div>
+        <!-- Category -->
+        <div class="col-12 col-sm-4 form-item">
+          <multiselect
+            v-model="search_category"
+            :options="search_categories"
+            placeholder="Category"
+          />
+        </div>
 
-      <!-- Submit Button -->
-      <div class="col-12 mt-3">
-        <button type="button" class="btn btn-info">FIND ORGANISATIONS</button>
+        <!-- Submit Button -->
+        <div class="col-12 col-sm-3 form-submit">
+          <button type="button" class="btn btn-info" v-on:click="onClickSearch">Search</button>
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -42,64 +46,67 @@ import Multiselect from "vue-multiselect";
 
 export default {
   components: { Multiselect },
+  props: {
+    search_locations: { },
+    search_categories: { }
+  },
   data() {
     return {
-      input_need: null,
-      search_lga: null,
-      search_category: null,
-      search_lgas: [
-        {
-          name: "Ballarat",
-          value: 1
-        },
-        {
-          name: "Broken Hill",
-          value: 2
-        },
-        {
-          name: "Hepburn",
-          value: 3
-        },
-        {
-          name: "Wendouree",
-          value: 4
-        }
-      ],
-      search_categories: [
-        {
-          display: "Any Category",
-          valye: "any"
-        },
-        {
-          display: "Supplies",
-          value: "supplies"
-        },
-        {
-          display: "Services",
-          value: "services"
-        }
-      ]
+      search_term: "",
+      search_location: null,
+      search_category: null
     };
+  },
+  methods: {
+    onClickSearch() {
+      this.$emit("updated", {
+        search_location: this.search_location,
+        search_category: this.search_category,
+        search_term: this.search_term
+      });
+    }
   }
 };
 </script>
 
 <style scoped>
+.row.no-gutter {
+  margin: 0;
+}
 .form-control {
-  height: 3em !important;
+  height: 43px !important;
 }
 .btn-info {
   width: 100%;
-  height: 100%;
+  height: 43px;
 }
-.color-background {
+.search.form {
   background-color: #384b71;
+  padding: 10px 15px;
 }
-
+.search.form h3 {
+  color: #fff;
+  margin: 0 0 15px 0;
+}
+.search.form .form-item,
+.search.form .form-submit {
+  margin-bottom: 15px;
+  padding: 0;
+}
+.search.form .form-item + .form-item,
+.search.form .form-item + .form-submit {
+  margin-left: 15px;
+}
 .multiselect__option--highlight:after {
   background: #02909e !important;
 }
 .multiselect__option--highlight {
   background: #02909e !important;
+}
+@media screen and (max-width: 575px) {
+  .search.form .form-item + .form-item,
+  .search.form .form-item + .form-submit {
+    margin-left: 0;
+  }
 }
 </style>
