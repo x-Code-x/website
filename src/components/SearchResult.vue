@@ -2,9 +2,9 @@
   <div class="search-result-container">
     <hr />
     <a v-if="link.length > 0" :href="link">
-      <h1>{{ title }}</h1>
+      <h3>{{ title }}</h3>
     </a>
-    <h1 v-else>{{ title }}</h1>
+    <h3 v-else>{{ title }}</h3>
     <div class="search-result-meta">
       <div class="search-result-categories">
         <span v-for="(category, index) in categories" :key="index" class="search-result-category">
@@ -16,21 +16,20 @@
     </div>
     <div class="search-result-description" v-html="description"></div>
     <div class="search-result-contact">
-      <div v-for="(value, key, index) in contact" :key="index">
-        <a v-if="key == 'phone'" :href="`tel:${ value }`">
+      <div v-for="(item, key, index) in contact" :key="index">
+        <a v-if="key == 'phone'" :href="`tel:${ item.href }`">
           <FontAwesomeIcon icon="phone-square-alt" />
-          {{ value }}
+          {{ item.human }}
         </a>
-        <a v-if="key == 'website'" :href="value">
+        <a v-if="key == 'link'" :href="item.href">
           <FontAwesomeIcon icon="address-card" /> Visit Website
         </a>
-        <a v-if="key == 'email'" :href="`mailto:${ value }`">
+        <a v-if="key == 'email'" :href="`mailto:${ item.href }`">
           <FontAwesomeIcon icon="envelope-square" />
-          {{ value }}
+          {{ item.human }}
         </a>
-        <a v-if="key == 'address'" href="#">
-          <FontAwesomeIcon icon="directions" />
-          {{ value }}
+        <a v-if="key == 'address'" :href="item.href">
+          <FontAwesomeIcon icon="directions" /> Get Directions
         </a>
       </div>
     </div>
@@ -65,8 +64,21 @@ export default {
       );
     },
     contact() {
-      return ["phone", "email", "address"].reduce((contact, attr) => {
-        if(this[attr]) {contact[attr] = this[attr]}
+      return ["phone", "email", "address", "link"].reduce((contact, attr) => {
+        var human = this[attr]
+        var href=human
+        if(human) {
+          if(attr == "phone") {
+            href = human.replace(/[^0-9]/, '');
+          }
+          if(attr == "address") {
+            href = 'http://maps.google.com/?q=' + encodeURI(human);
+          }
+          contact[attr] = {
+            href: href,
+            human: human
+          }
+        }
         return contact;
       }, {});
     }
@@ -84,5 +96,6 @@ h1 {
 .search-result-meta,
 .search-result-contact {
   font-weight: 600; /* semibold */
+  word-wrap: break-word;
 }
 </style>
